@@ -99,15 +99,6 @@ html[data-theme="light"] {
 	background: var(--accent);
 }
 
-@media (max-width: 520px) {
-	.theme-bar {
-		top: auto;
-		bottom: 12.8rem;
-		right: 50%;
-		transform: translateX(50%);
-	}
-}
-
 .site {
 	position: relative;
 	min-height: 100dvh;
@@ -563,6 +554,54 @@ html[data-theme="light"] {
 .work-card__links a:focus-visible {
 	color: var(--accent);
 	outline: none;
+}
+
+/*
+  Narrow viewports + phone landscape: hide theme controls (520px missed ~844–932px widths).
+  Footer: drop position:fixed so it sits after <main> in document order — no overlap with content.
+*/
+@media (max-width: 1024px) {
+	.theme-bar {
+		display: none;
+	}
+
+	.site-footer {
+		position: static;
+		left: auto;
+		right: auto;
+		bottom: auto;
+		width: 100%;
+		padding-bottom: calc(2.4rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	body {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+		min-height: 100dvh;
+		min-height: 100svh;
+	}
+
+	/* Sticky-footer column: fill viewport without min-height:100dvh + footer overflow */
+	main.site {
+		flex: 1 1 auto;
+		width: 100%;
+		min-height: 0;
+	}
+
+	.site {
+		min-height: auto;
+		padding-top: 4rem;
+		padding-bottom: 3.2rem;
+		padding-left: 2.4rem;
+		padding-right: 2.4rem;
+	}
+
+	.site--page {
+		justify-content: flex-start;
+		padding-top: 5.6rem;
+		padding-bottom: 3.2rem;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
