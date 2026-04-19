@@ -1,0 +1,591 @@
+/* Minimal reset */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 62.5%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	min-height: 100dvh;
+	font-family: "IBM Plex Sans", system-ui, sans-serif;
+	font-size: 1.6rem;
+	line-height: 1.5;
+	color: var(--fg);
+	background: var(--bg);
+	overflow-x: hidden;
+	transition:
+		background-color 0.35s ease,
+		color 0.35s ease;
+}
+
+/* Dark palette (default) — emerald / mint accent */
+html {
+	color-scheme: dark;
+	--bg: #0c0c0e;
+	--bg-elevated: #141418;
+	--fg: #e8e6e3;
+	--fg-muted: #8a8780;
+	--accent: #50fa7b;
+	--accent-soft: rgba(80, 250, 123, 0.35);
+	--glow: rgba(80, 250, 123, 0.14);
+	--accent-ink: var(--bg);
+	--pill-fg: var(--accent);
+	--pill-bg: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+html[data-theme="light"] {
+	color-scheme: light;
+	--bg: #f7f5f0;
+	--bg-elevated: #fff;
+	--fg: #1a1917;
+	--fg-muted: #5c5a55;
+	--accent: #50fa7b;
+	--accent-soft: rgba(80, 250, 123, 0.22);
+	--glow: rgba(80, 250, 123, 0.09);
+	--accent-ink: var(--fg);
+	/* Mint on cream fails contrast; darken label text + anchor pill to page bg */
+	--pill-fg: color-mix(in srgb, var(--accent) 32%, var(--fg));
+	--pill-bg: color-mix(in srgb, var(--accent) 18%, var(--bg));
+}
+
+.theme-bar {
+	position: fixed;
+	top: 1.6rem;
+	right: 1.6rem;
+	z-index: 10;
+	display: flex;
+	padding: 0.35rem;
+	gap: 0.2rem;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+	border: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.theme-bar__btn {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	padding: 0.65rem 1rem;
+	border: none;
+	border-radius: 999px;
+	cursor: pointer;
+	color: var(--fg-muted);
+	background: transparent;
+	transition:
+		color 0.2s ease,
+		background 0.2s ease;
+}
+
+.theme-bar__btn:hover,
+.theme-bar__btn:focus-visible {
+	color: var(--fg);
+	outline: none;
+}
+
+.theme-bar__btn[aria-pressed="true"] {
+	color: var(--accent-ink);
+	background: var(--accent);
+}
+
+@media (max-width: 520px) {
+	.theme-bar {
+		top: auto;
+		bottom: 12.8rem;
+		right: 50%;
+		transform: translateX(50%);
+	}
+}
+
+.site {
+	position: relative;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4.8rem 2.4rem 14rem;
+}
+
+/* Ambient gradient orbs */
+.ambient {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+	overflow: hidden;
+}
+
+.ambient__orb {
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(80px);
+	opacity: 0.55;
+	animation: drift 22s ease-in-out infinite;
+}
+
+.ambient__orb--a {
+	width: min(55vw, 420px);
+	height: min(55vw, 420px);
+	background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+	top: -15%;
+	right: -10%;
+	animation-delay: 0s;
+}
+
+.ambient__orb--b {
+	width: min(45vw, 360px);
+	height: min(45vw, 360px);
+	background: radial-gradient(circle, rgba(45, 200, 150, 0.12) 0%, transparent 70%);
+	bottom: -5%;
+	left: -15%;
+	animation-delay: -8s;
+	animation-duration: 28s;
+}
+
+.ambient__orb--c {
+	width: min(35vw, 280px);
+	height: min(35vw, 280px);
+	background: radial-gradient(circle, var(--glow) 0%, transparent 65%);
+	top: 40%;
+	left: 30%;
+	animation-delay: -14s;
+	animation-duration: 18s;
+}
+
+@keyframes drift {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+	33% {
+		transform: translate(3%, 4%) scale(1.05);
+	}
+	66% {
+		transform: translate(-2%, 2%) scale(0.95);
+	}
+}
+
+/* Cursor-follow soft light */
+.cursor-glow {
+	position: fixed;
+	width: 520px;
+	height: 520px;
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 1;
+	background: radial-gradient(circle, var(--glow) 0%, transparent 55%);
+	transform: translate(-50%, -50%);
+	opacity: 0;
+	transition: opacity 0.5s ease;
+	will-change: transform;
+}
+
+.cursor-glow.is-active {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ambient__orb {
+		animation: none;
+	}
+	.cursor-glow {
+		display: none;
+	}
+}
+
+.hero {
+	position: relative;
+	z-index: 2;
+	text-align: center;
+	max-width: 56rem;
+}
+
+.eyebrow {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 600;
+	font-size: 1.1rem;
+	letter-spacing: 0.38em;
+	text-transform: uppercase;
+	color: var(--pill-fg);
+	margin-bottom: 2rem;
+	opacity: 0;
+	animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.name {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(3.6rem, 10vw, 6.4rem);
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	color: var(--fg);
+	margin-bottom: 1.6rem;
+}
+
+.name span {
+	display: inline-block;
+	opacity: 0;
+	animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.name span:nth-child(1) {
+	animation-delay: 0.2s;
+}
+
+.name span:nth-child(2) {
+	animation-delay: 0.32s;
+}
+
+.role {
+	font-size: clamp(1.65rem, 3.2vw, 1.95rem);
+	color: var(--fg);
+	font-weight: 600;
+	margin-bottom: 0.85rem;
+	opacity: 0;
+	animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+}
+
+.tagline {
+	max-width: 42rem;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: clamp(1.35rem, 2.4vw, 1.45rem);
+	font-weight: 400;
+	line-height: 1.55;
+	color: var(--fg-muted);
+	margin-bottom: 3.2rem;
+	opacity: 0;
+	animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.52s forwards;
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(1.4rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2rem;
+	justify-content: center;
+	opacity: 0;
+	animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.64s forwards;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 4.8rem;
+	padding: 0 2.6rem;
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 600;
+	font-size: 1.2rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--accent-ink);
+	background: var(--accent);
+	border: 1px solid transparent;
+	border-radius: 999px;
+	transition:
+		transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 0.35s ease,
+		background 0.25s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 32px var(--accent-soft);
+	outline: none;
+}
+
+.btn--ghost {
+	color: var(--fg);
+	background: transparent;
+	border-color: color-mix(in srgb, var(--fg-muted) 45%, transparent);
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+	border-color: var(--accent);
+	color: var(--accent);
+	box-shadow: none;
+}
+
+.site-footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.2rem;
+	padding: 2rem 2rem 2.4rem;
+}
+
+.social {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem 1.2rem;
+	list-style: none;
+	opacity: 0;
+	animation: rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+}
+
+.social a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 4.4rem;
+	height: 4.4rem;
+	color: var(--fg-muted);
+	border-radius: 50%;
+	transition:
+		color 0.25s ease,
+		transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+		background 0.25s ease;
+}
+
+.social a:hover,
+.social a:focus-visible {
+	color: var(--accent);
+	transform: translateY(-3px);
+	background: color-mix(in srgb, var(--accent) 8%, transparent);
+	outline: none;
+}
+
+.social svg {
+	width: 2rem;
+	height: 2rem;
+}
+
+.foot {
+	margin: 0;
+	text-align: center;
+	font-size: 1.2rem;
+	color: color-mix(in srgb, var(--fg-muted) 70%, transparent);
+}
+
+/* —— Inner pages (works) —— */
+.site--page {
+	justify-content: flex-start;
+	padding-top: 7.2rem;
+	padding-bottom: 18rem;
+	max-width: 72rem;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	align-items: stretch;
+}
+
+.page-head {
+	position: relative;
+	z-index: 2;
+	margin-bottom: 4rem;
+}
+
+.page-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 600;
+	font-size: 1.2rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--fg-muted);
+	margin-bottom: 2.4rem;
+	transition: color 0.2s ease;
+}
+
+.page-back:hover,
+.page-back:focus-visible {
+	color: var(--accent);
+	outline: none;
+}
+
+.page-title {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 800;
+	font-size: clamp(2.8rem, 6vw, 4.2rem);
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	color: var(--fg);
+	margin-bottom: 1.2rem;
+}
+
+.page-lead {
+	font-size: 1.65rem;
+	line-height: 1.6;
+	color: var(--fg-muted);
+	max-width: 48rem;
+	margin-bottom: 0;
+}
+
+.page-lead a {
+	color: var(--pill-fg);
+	text-decoration: none;
+	border-bottom: 1px solid color-mix(in srgb, var(--pill-fg) 40%, transparent);
+	transition: border-color 0.2s ease;
+}
+
+.page-lead a:hover,
+.page-lead a:focus-visible {
+	border-bottom-color: var(--pill-fg);
+	outline: none;
+}
+
+.work-list {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 1.6rem;
+	list-style: none;
+}
+
+.work-card {
+	padding: 2.4rem 2.8rem;
+	border-radius: 1.6rem;
+	background: color-mix(in srgb, var(--fg) 4%, var(--bg));
+	border: 1px solid color-mix(in srgb, var(--fg-muted) 18%, transparent);
+	transition:
+		transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+		border-color 0.25s ease,
+		box-shadow 0.35s ease;
+	opacity: 0;
+	animation: rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.work-card:nth-child(1) {
+	animation-delay: 0.08s;
+}
+.work-card:nth-child(2) {
+	animation-delay: 0.16s;
+}
+.work-card:nth-child(3) {
+	animation-delay: 0.24s;
+}
+.work-card:nth-child(4) {
+	animation-delay: 0.32s;
+}
+
+.work-card:hover {
+	transform: translateY(-3px);
+	border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+	box-shadow: 0 16px 40px color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+.work-card__title {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 700;
+	font-size: 2rem;
+	letter-spacing: -0.02em;
+	color: var(--fg);
+	margin-bottom: 0.8rem;
+}
+
+.work-card__desc {
+	font-size: 1.55rem;
+	line-height: 1.65;
+	color: var(--fg-muted);
+	margin-bottom: 1.4rem;
+}
+
+.work-card__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	margin: 0 0 1.6rem;
+	padding: 0;
+	list-style: none;
+}
+
+.work-card__tag {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 0.4rem 0.9rem;
+	border-radius: 999px;
+	color: var(--pill-fg);
+	background: var(--pill-bg);
+}
+
+.work-card__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2rem 2rem;
+}
+
+.work-card__links a {
+	font-family: "Bricolage Grotesque", system-ui, sans-serif;
+	font-weight: 600;
+	font-size: 1.15rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--fg);
+	border-bottom: 2px solid var(--accent);
+	padding-bottom: 0.15rem;
+	transition:
+		color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.work-card__links a:hover,
+.work-card__links a:focus-visible {
+	color: var(--accent);
+	outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.work-card {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+	.work-card:hover {
+		transform: none;
+	}
+	.eyebrow,
+	.name span,
+	.role,
+	.tagline,
+	.actions,
+	.social {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+	.btn:hover,
+	.social a:hover {
+		transform: none;
+	}
+}
